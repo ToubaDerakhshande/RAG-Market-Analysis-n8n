@@ -1,0 +1,606 @@
+{
+  "name": "RAG-Market Analysis",
+  "nodes": [
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "1",
+              "name": "asset",
+              "value": "={{ $json['Asset Classes'] }}",
+              "type": "string"
+            },
+            {
+              "id": "2",
+              "name": "horizon",
+              "value": "={{ $json['Time Zone'] }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        624,
+        -48
+      ],
+      "id": "1095f1e5-daa8-45ce-b478-f9fb92589945",
+      "name": "Set Request Params"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Please provide a market analysis for {{ $json.asset }} over a {{ $json.horizon }} timeframe based on the provided news feeds. Summarize the current sentiment, key price drivers, and upcoming catalysts in clear, professional English.\n",
+        "options": {
+          "systemMessage": "=User requested analysis for: {{ $json.asset }}\n\nFrom the gathered RSS feeds (Investing, FXStreet, Dow Jones):\n1. Filter the headlines and content specifically relevant to \"{{ $json.market_category }}\".\n2. Summarize the current market sentiment (Bullish / Bearish / Neutral).\n3. Identify the key fundamental drivers, upcoming economic data releases, and major price levels mentioned in the news.\n4. Output the final response in clear, fluent English using clean text formatting, bullet points (such as standard dots or dashes), and proper spacing. \n\nCRITICAL FORMATTING RULES:\n- Do NOT use any markdown headers (no #, *, **, ##, ###, etc.).\n- Do NOT use any asterisks (*) for bolding or italicizing text.\n- Rely solely on line breaks, indentation, and capitalization to structure the layout cleanly and readably.\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        752,
+        -48
+      ],
+      "id": "508e8afd-bc53-422d-b89b-967a39c8eadc",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "jsCode": "const aiOutput = $input.first().json.output || \"جهت کوتاه‌مدت با داده‌های موجود روشن نیست.\";\n\nreturn {\n  json: {\n    success: true,\n    data: {\n      asset: \"gold\",\n      horizon: \"1d\",\n      direction: \"Unclear / Requires Further Investigation\",\n      summary: aiOutput,\n      factors: [\"US Inflation\",\n    \"US Federal Reserve Interest Rates\",\n    \"Physical Market Demand\"],\n      risks: [\"Unexpected volatility in the US Dollar Index (DXY)\"],\n      updated_at: new Date().toISOString().replace('T', ' ').substring(0, 19)\n    }\n  }\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1024,
+        -48
+      ],
+      "id": "470cda76-e224-4844-9247-d55ba19b5813",
+      "name": "Format JSON Response"
+    },
+    {
+      "parameters": {
+        "operation": "completion",
+        "completionTitle": "Result",
+        "completionMessage": "={{ $json.data.summary }}",
+        "options": {
+          "appendAttribution": false,
+          "customCss": "/* پس‌زمینه و فونت کلی */\n:root {\n  --font-family: \"Vazirmatn\", \"Tahoma\", sans-serif;\n  --font-size-body: 15px;\n  --font-size-label: 14px;\n  --font-size-input: 15px;\n  --font-size-header: 30px;\n  --font-size-subheader: 15px;\n  --color-background: #0b1020;\n  --color-card-bg: rgba(18, 27, 48, 0.94);\n  --color-card-border: rgba(255, 255, 255, 0.10);\n  --color-card-shadow: rgba(0, 0, 0, 0.35);\n  --color-header: #f8fafc;\n  --color-header-subtext: #a9b5ca;\n  --color-label: #d7deeb;\n  --color-html-text: #cbd5e1;\n  --color-html-link: #f4b942;\n  --color-input-border: #33415e;\n  --color-input-text: #f8fafc;\n  --color-focus-border: #f4b942;\n  --color-submit-btn-bg: #e9a92b;\n  --color-submit-btn-text: #111827;\n  --color-error: #fb7185;\n  --color-required: #f87171;\n  --color-clear-button-bg: #475569;\n  --color-clear-button-text: #f8fafc;\n}\n\n/* پس‌زمینه گرادیانی */\nbody {\n  background:\n    radial-gradient(ellipse at 15% 10%, rgba(233, 169, 43, 0.16), transparent 35%),\n    linear-gradient(135deg, #080d19 0%, #111b30 55%, #17243b 100%);\n}\n\n/* کارت فرم */\nform {\n  border: 1px solid var(--color-card-border);\n  border-radius: 22px;\n  box-shadow: 0 24px 70px var(--color-card-shadow);\n  backdrop-filter: blur(16px);\n}\n\n/* ورودی‌ها */\ninput,\ntextarea,\nselect {\n  border-radius: 12px;\n  transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;\n}\n\ninput:focus,\ntextarea:focus,\nselect:focus {\n  border-color: var(--color-focus-border);\n  box-shadow: 0 0 0 4px rgba(244, 185, 66, 0.15);\n}\n\n/* دکمه ارسال */\nbutton[type=\"submit\"] {\n  border-radius: 12px;\n  font-weight: 700;\n  transition: transform 0.2s ease, filter 0.2s ease;\n}\n\nbutton[type=\"submit\"]:hover {\n  filter: brightness(1.06);\n  transform: translateY(-1px);\n}\n"
+        }
+      },
+      "type": "n8n-nodes-base.form",
+      "typeVersion": 2.5,
+      "position": [
+        1168,
+        -48
+      ],
+      "id": "fb9098bc-0c1b-4811-b976-9b773da1dabe",
+      "name": "Form",
+      "webhookId": "70298bd1-778e-465e-be57-89d85ae29864"
+    },
+    {
+      "parameters": {
+        "formTitle": "Market Analysis System",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Asset Classes",
+              "fieldType": "dropdown",
+              "defaultValue": "choose one option",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "🥇 Gold (XAU/USD) ➔ XAUUSD"
+                  },
+                  {
+                    "option": "💵 US Dollar Index (DXY) ➔ DXY"
+                  },
+                  {
+                    "option": "💶 EUR/USD ➔ EURUSD"
+                  },
+                  {
+                    "option": "🛢️ Crude Oil (Brent / WTI) ➔ OIL"
+                  },
+                  {
+                    "option": "💻 Nasdaq 100 / Tech ➔ NASDAQ"
+                  },
+                  {
+                    "option": "₿ Bitcoin & Crypto ➔ BTC"
+                  }
+                ]
+              },
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Time Zone",
+              "fieldType": "dropdown",
+              "fieldName": "Time Zone",
+              "defaultValue": "Select one option",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "daily"
+                  },
+                  {
+                    "option": "monthly"
+                  }
+                ]
+              },
+              "requiredField": true
+            }
+          ]
+        },
+        "options": {
+          "appendAttribution": false,
+          "buttonLabel": "Send",
+          "customCss": "/* پس‌زمینه و فونت کلی */\n:root {\n  --font-family: \"Vazirmatn\", \"Tahoma\", sans-serif;\n  --font-size-body: 15px;\n  --font-size-label: 14px;\n  --font-size-input: 15px;\n  --font-size-header: 30px;\n  --font-size-subheader: 15px;\n  --color-background: #0b1020;\n  --color-card-bg: rgba(18, 27, 48, 0.94);\n  --color-card-border: rgba(255, 255, 255, 0.10);\n  --color-card-shadow: rgba(0, 0, 0, 0.35);\n  --color-header: #f8fafc;\n  --color-header-subtext: #a9b5ca;\n  --color-label: #d7deeb;\n  --color-html-text: #cbd5e1;\n  --color-html-link: #f4b942;\n  --color-input-border: #33415e;\n  --color-input-text: #f8fafc;\n  --color-focus-border: #f4b942;\n  --color-submit-btn-bg: #e9a92b;\n  --color-submit-btn-text: #111827;\n  --color-error: #fb7185;\n  --color-required: #f87171;\n  --color-clear-button-bg: #475569;\n  --color-clear-button-text: #f8fafc;\n}\n\n/* پس‌زمینه گرادیانی */\nbody {\n  background:\n    radial-gradient(ellipse at 15% 10%, rgba(233, 169, 43, 0.16), transparent 35%),\n    linear-gradient(135deg, #080d19 0%, #111b30 55%, #17243b 100%);\n}\n\n/* کارت فرم */\nform {\n  border: 1px solid var(--color-card-border);\n  border-radius: 22px;\n  box-shadow: 0 24px 70px var(--color-card-shadow);\n  backdrop-filter: blur(16px);\n}\n\n/* ورودی‌ها */\ninput,\ntextarea,\nselect {\n  border-radius: 12px;\n  transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;\n}\n\ninput:focus,\ntextarea:focus,\nselect:focus {\n  border-color: var(--color-focus-border);\n  box-shadow: 0 0 0 4px rgba(244, 185, 66, 0.15);\n}\n\n/* دکمه ارسال */\nbutton[type=\"submit\"] {\n  border-radius: 12px;\n  font-weight: 700;\n  transition: transform 0.2s ease, filter 0.2s ease;\n}\n\nbutton[type=\"submit\"]:hover {\n  filter: brightness(1.06);\n  transform: translateY(-1px);\n}\n"
+        }
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.6,
+      "position": [
+        480,
+        -48
+      ],
+      "id": "7ea62060-080f-4f15-ab84-e45ab5d2d2e4",
+      "name": "question",
+      "webhookId": "3e7c218e-eebb-46ad-9265-e46ae0996dcd"
+    },
+    {
+      "parameters": {
+        "model": "cohere/north-mini-code:free",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        608,
+        160
+      ],
+      "id": "93b5ae28-9c85-48a2-8342-035e999d2915",
+      "name": "OpenRouter Chat Model",
+      "credentials": {
+        "openRouterApi": {
+          "id": "ew5OmYOh7FXxhZ1u",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelName": "embed-multilingual-v3.0"
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsCohere",
+      "typeVersion": 1,
+      "position": [
+        160,
+        336
+      ],
+      "id": "b1dbe7eb-dba0-4716-8848-cc475d0d2444",
+      "name": "Embeddings Cohere",
+      "credentials": {
+        "cohereApi": {
+          "id": "y7oyuk2PRvYqhwO9",
+          "name": "Cohere account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
+      "typeVersion": 1.1,
+      "position": [
+        272,
+        192
+      ],
+      "id": "d76b6529-9f32-486d-b859-80fa7e9beb7b",
+      "name": "Default Data Loader"
+    },
+    {
+      "parameters": {
+        "url": "https://www.investing.com/rss/news_25.rss",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1.2,
+      "position": [
+        -320,
+        -64
+      ],
+      "id": "deb0bc41-8080-46f3-9ba8-645d46fef2c2",
+      "name": "RSS Read2"
+    },
+    {
+      "parameters": {
+        "url": "https://www.fxstreet.com/rss/news",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1.2,
+      "position": [
+        -320,
+        64
+      ],
+      "id": "afe9bddb-2132-4f54-877f-8f48e9f04489",
+      "name": "RSS Read3"
+    },
+    {
+      "parameters": {
+        "url": "https://feeds.content.dowjones.io/public/rss/mw_topstories",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1.2,
+      "position": [
+        -320,
+        208
+      ],
+      "id": "bf366f45-57ec-4e7d-91a9-c7e6caba03b4",
+      "name": "RSS Read4"
+    },
+    {
+      "parameters": {
+        "mode": "insert",
+        "qdrantCollection": {
+          "__rl": true,
+          "value": "gold_news",
+          "mode": "list",
+          "cachedResultName": "gold_news"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreQdrant",
+      "typeVersion": 1.3,
+      "position": [
+        96,
+        0
+      ],
+      "id": "f8d47d32-2de7-4a18-975d-282d1a3d1290",
+      "name": "Qdrant Vector Store",
+      "credentials": {
+        "qdrantApi": {
+          "id": "nWZLxhMgSh3mgJzH",
+          "name": "Qdrant account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolDescription": "Used to search gold market news, economic data, and financial analysis from the Qdrant vector database.\n",
+        "qdrantCollection": {
+          "__rl": true,
+          "value": "gold_news",
+          "mode": "list",
+          "cachedResultName": "gold_news"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreQdrant",
+      "typeVersion": 1.3,
+      "position": [
+        800,
+        240
+      ],
+      "id": "97ba139c-52fd-4468-9fec-3748b1f22853",
+      "name": "Qdrant Vector Store1",
+      "credentials": {
+        "qdrantApi": {
+          "id": "nWZLxhMgSh3mgJzH",
+          "name": "Qdrant account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "https://www.investing.com/rss/market_overview_Technical.rss",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1.2,
+      "position": [
+        -320,
+        592
+      ],
+      "id": "aa984aea-651d-4088-a0fd-cf7f798196db",
+      "name": "RSS Read"
+    },
+    {
+      "parameters": {
+        "url": "https://www.investing.com/rss/commodities_Technical.rss",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1.2,
+      "position": [
+        -320,
+        -176
+      ],
+      "id": "fb8ee320-d0a9-4242-92f0-14ebcdbff933",
+      "name": "RSS Read1"
+    },
+    {
+      "parameters": {
+        "url": "https://www.investing.com/rss/forex_Technical.rss",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1.2,
+      "position": [
+        -320,
+        336
+      ],
+      "id": "6c903110-a78d-418e-928a-1998af774168",
+      "name": "RSS Read5"
+    },
+    {
+      "parameters": {
+        "url": "https://www.investing.com/rss/stock_Technical.rss",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1.2,
+      "position": [
+        -320,
+        448
+      ],
+      "id": "d242f2dc-13d1-450e-925e-b7f9102523d5",
+      "name": "RSS Read6"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes",
+              "minutesInterval": 15
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        -608,
+        128
+      ],
+      "id": "1a498980-4a50-42b2-b8a8-0c971f3e828c",
+      "name": "Schedule Trigger"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Set Request Params": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Format JSON Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format JSON Response": {
+      "main": [
+        [
+          {
+            "node": "Form",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "question": {
+      "main": [
+        [
+          {
+            "node": "Set Request Params",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings Cohere": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Qdrant Vector Store",
+            "type": "ai_embedding",
+            "index": 0
+          },
+          {
+            "node": "Qdrant Vector Store1",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Default Data Loader": {
+      "ai_document": [
+        [
+          {
+            "node": "Qdrant Vector Store",
+            "type": "ai_document",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "RSS Read2": {
+      "main": [
+        [
+          {
+            "node": "Qdrant Vector Store",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "RSS Read3": {
+      "main": [
+        [
+          {
+            "node": "Qdrant Vector Store",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "RSS Read4": {
+      "main": [
+        [
+          {
+            "node": "Qdrant Vector Store",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Qdrant Vector Store1": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "RSS Read": {
+      "main": [
+        [
+          {
+            "node": "Qdrant Vector Store",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "RSS Read1": {
+      "main": [
+        [
+          {
+            "node": "Qdrant Vector Store",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "RSS Read5": {
+      "main": [
+        [
+          {
+            "node": "Qdrant Vector Store",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "RSS Read6": {
+      "main": [
+        [
+          {
+            "node": "Qdrant Vector Store",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "RSS Read1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "RSS Read2",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "RSS Read3",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "RSS Read4",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "RSS Read5",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "RSS Read6",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "RSS Read",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Qdrant Vector Store",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "010499ae-85c6-4b5f-be5a-5fb03625c629",
+  "meta": {
+    "instanceId": "3fade502b6432c160e2358e4da55bb2fc36ae3a63518bc137a36d4909f62913b"
+  },
+  "nodeGroups": [],
+  "id": "OngXtbqDNBueqvEb",
+  "tags": []
+}
