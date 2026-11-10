@@ -4,7 +4,7 @@
 
 ### Automated RAG Pipeline & AI-Powered Financial Insights in n8n
 
-<img src="image_gen_fb800f32-c14a-40a1-9d4f-ad16a599fe71_0.webp" alt="RAG Market Analysis Icon" width="240" style="border-radius: 12px; box-shadow: 0 4px 16px rgba(0,0,0,0.3);">
+<img src="6666f666-ed35-46b0-947d-398e0680487f.webp" alt="RAG Market Analysis Icon" width="240" style="border-radius: 12px; box-shadow: 0 4px 16px rgba(0,0,0,0.3);">
 
 <p align="center">
   <a href="#-architecture--workflow-overview">Architecture</a> •
